@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
+import { quizQuestions, quizSessionStats } from "@/data/quizQuestions";
 
 type Course = {
   id: string;
@@ -153,6 +155,13 @@ const sessions: Session[] = [
     coach: "Narendranath Sen",
   },
 ];
+
+const sessionQuestionCount = sessions.reduce<Record<string, number>>((acc, session) => {
+  acc[session.id] = quizSessionStats[session.id]?.total ?? 0;
+  return acc;
+}, {});
+
+const totalQuestionCount = quizQuestions.length;
 
 const tasks: Task[] = [
   {
@@ -450,6 +459,72 @@ export default function Home() {
           </aside>
 
           <main className="flex flex-col gap-6">
+            <div className="grid gap-4 lg:grid-cols-2">
+              <div className="rounded-3xl bg-white/95 p-5 shadow-sm ring-1 ring-slate-100">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.12em] text-slate-500">Access Center</p>
+                    <h2 className="text-lg font-semibold text-slate-900">Login for learners, teachers, admins</h2>
+                    <p className="text-sm text-slate-600">
+                      Route the right experience before opening classes, quizzes, or override actions.
+                    </p>
+                  </div>
+                  <Link
+                    href="/login"
+                    className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-slate-800"
+                  >
+                    Open login
+                  </Link>
+                </div>
+                <div className="mt-3 grid grid-cols-3 gap-2 text-xs text-slate-600">
+                  {[
+                    { label: "Students", value: "Active" },
+                    { label: "Teachers", value: "Ready" },
+                    { label: "Admins", value: "Guarded" },
+                  ].map((item) => (
+                    <div key={item.label} className="rounded-xl bg-slate-50 px-3 py-2 shadow-sm">
+                      <p className="uppercase tracking-[0.1em] text-slate-500">{item.label}</p>
+                      <p className="text-sm font-semibold text-slate-900">{item.value}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-3xl bg-white/95 p-5 shadow-sm ring-1 ring-slate-100">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.12em] text-slate-500">In-class Quiz</p>
+                    <h2 className="text-lg font-semibold text-slate-900">Use the ready question bank</h2>
+                    <p className="text-sm text-slate-600">Start quizzes from sessions or jump straight into the quiz room.</p>
+                  </div>
+                  <Link
+                    href="/quiz"
+                    className="rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-blue-700"
+                  >
+                    Launch quiz
+                  </Link>
+                </div>
+                <div className="mt-3 grid grid-cols-3 gap-2 text-xs text-slate-600">
+                  <div className="rounded-xl bg-slate-50 px-3 py-2 shadow-sm">
+                    <p className="uppercase tracking-[0.1em] text-slate-500">Question bank</p>
+                    <p className="text-sm font-semibold text-slate-900">{totalQuestionCount} items</p>
+                  </div>
+                  {sessions.slice(0, 2).map((session) => (
+                    <div key={session.id} className="rounded-xl bg-slate-50 px-3 py-2 shadow-sm">
+                      <p className="uppercase tracking-[0.1em] text-slate-500">{session.subject}</p>
+                      <p className="text-sm font-semibold text-slate-900">
+                        {sessionQuestionCount[session.id] ?? 0} Qs • {session.cohort}
+                      </p>
+                    </div>
+                  ))}
+                  <div className="rounded-xl bg-slate-50 px-3 py-2 shadow-sm">
+                    <p className="uppercase tracking-[0.1em] text-slate-500">Quiz route</p>
+                    <p className="text-sm font-semibold text-slate-900">/quiz room</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div className="flex flex-wrap items-center gap-3">
               {["My Courses", "Notifications", "Sessions", "Pending Tasks"].map((label, idx) => (
                 <span
@@ -542,27 +617,33 @@ export default function Home() {
 
             <Card title="Sessions with Quiz">
               <div className="overflow-hidden rounded-2xl border border-slate-100">
-                <div className="grid grid-cols-[1.2fr,2fr,1.5fr,1fr,0.6fr] bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500 max-md:hidden">
+                <div className="grid grid-cols-[1.2fr,2fr,1.3fr,1fr,0.9fr] bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500 max-md:hidden">
                   <span>Subject</span>
                   <span>Description</span>
                   <span>Planned Start</span>
                   <span>Coach</span>
-                  <span>Action</span>
+                  <span>Quiz</span>
                 </div>
                 <div className="divide-y divide-slate-100">
                   {sessions.map((session) => (
                     <div
                       key={session.id}
-                      className="grid grid-cols-[1.2fr,2fr,1.5fr,1fr,0.6fr] items-center px-4 py-3 text-sm text-slate-700 max-md:grid-cols-1 max-md:gap-2"
+                      className="grid grid-cols-[1.2fr,2fr,1.3fr,1fr,0.9fr] items-center px-4 py-3 text-sm text-slate-700 max-md:grid-cols-1 max-md:gap-2"
                     >
                       <span className="font-semibold text-slate-900">{session.subject}</span>
                       <span>{session.description}</span>
                       <span className="text-slate-500">{session.start}</span>
                       <span className="text-slate-600">{session.coach}</span>
-                      <div className="flex justify-end max-md:justify-start">
-                        <button className="rounded-full bg-blue-600 px-4 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-white shadow hover:bg-blue-700">
-                          Join
-                        </button>
+                      <div className="flex flex-col items-end gap-2 text-xs text-slate-600 max-md:items-start">
+                        <span className="rounded-full bg-slate-100 px-3 py-1 font-semibold text-slate-800">
+                          {sessionQuestionCount[session.id] ?? 0} questions
+                        </span>
+                        <Link
+                          href="/quiz"
+                          className="inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-white shadow hover:bg-blue-700"
+                        >
+                          Open quiz
+                        </Link>
                       </div>
                     </div>
                   ))}
