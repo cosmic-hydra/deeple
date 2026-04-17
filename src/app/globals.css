@@ -1,8 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f5f7f3;
+  --foreground: #0f172a;
+  --accent: #3056e3;
+  --accent-soft: #e8edff;
+  --muted: #5b6476;
+  --surface: #0d1b3a;
+  --card: #ffffff;
 }
 
 @theme inline {
@@ -20,7 +25,20 @@
 }
 
 body {
-  background: var(--background);
+  background: radial-gradient(circle at 10% 10%, #f7fbff 0, #f7fbff 25%, transparent 25%),
+    radial-gradient(circle at 80% 0%, #f0f6ff 0, #f0f6ff 23%, transparent 23%),
+    var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
+  letter-spacing: -0.01em;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) transparent;
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--accent);
 }
